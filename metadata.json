@@ -1,0 +1,6 @@
+{
+  "name": "The Plot Bazaar",
+  "description": "Premium land investment and plot brokerage advisory with verified documentation, transparent pricing, and structured payment solutions in Pune and surrounding high-growth corridors.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
