@@ -22,6 +22,7 @@ import {
   getAllExternalVideoUrls, 
   parseVideoMediaSource 
 } from '../utils/videoStorage';
+import { VIDEO_ASSETS } from '../utils/videoAssets';
 import { VideoManagerModal } from './VideoManagerModal';
 
 export interface VideoTrack {
@@ -283,11 +284,11 @@ export const SiteTourVideoPlayer: React.FC<SiteTourVideoPlayerProps> = ({
   const currentTrack = VIDEO_TRACKS[selectedTrackIndex];
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
-  // Resolve active source
+  // Resolve active source: IndexedDB Blob URL > External CDN URL > Bundled Vite Asset > Public URL
   const getTrackSource = (track: VideoTrack) => {
     if (storedVideos[track.id]?.url) return storedVideos[track.id].url;
     if (externalUrls[track.id]) return externalUrls[track.id];
-    return track.videoSrc;
+    return VIDEO_ASSETS[track.id] || track.videoSrc;
   };
 
   // Active landmark within current track based on currentTime
@@ -468,7 +469,13 @@ export const SiteTourVideoPlayer: React.FC<SiteTourVideoPlayerProps> = ({
             return (
               <video
                 key={track.id}
-                ref={(el) => { videoRefs.current[idx] = el; }}
+                ref={(el) => {
+                  videoRefs.current[idx] = el;
+                  if (el) {
+                    el.muted = isMuted;
+                    el.defaultMuted = isMuted;
+                  }
+                }}
                 src={src}
                 preload="auto"
                 autoPlay={isCurrent}
@@ -489,7 +496,10 @@ export const SiteTourVideoPlayer: React.FC<SiteTourVideoPlayerProps> = ({
                 className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
                   isCurrent ? 'opacity-100 z-0 block' : 'opacity-0 pointer-events-none -z-10'
                 }`}
-              />
+              >
+                <source src={src} type="video/mp4" />
+                <source src={track.videoSrc} type="video/mp4" />
+              </video>
             );
           });
         })()}

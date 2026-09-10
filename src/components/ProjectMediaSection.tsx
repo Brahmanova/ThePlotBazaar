@@ -30,6 +30,7 @@ import {
   saveVideoBlob,
   parseVideoMediaSource
 } from '../utils/videoStorage';
+import { VIDEO_ASSETS } from '../utils/videoAssets';
 
 export interface ProjectVideoItem {
   id: string;
@@ -306,11 +307,11 @@ export const ProjectMediaSection: React.FC<ProjectMediaSectionProps> = ({
   const activeVideo = PROJECT_VIDEOS[selectedVideoIndex];
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
-  // Resolve active source: IndexedDB Blob URL > External CDN URL > Static Bundled File
+  // Resolve active source: IndexedDB Blob URL > External CDN URL > Bundled Vite Asset > Public URL
   const getVideoSource = (video: ProjectVideoItem) => {
     if (storedVideos[video.id]?.url) return storedVideos[video.id].url;
     if (externalUrls[video.id]) return externalUrls[video.id];
-    return video.videoSrc;
+    return VIDEO_ASSETS[video.id] || video.videoSrc;
   };
 
   // Active landmark within active video
@@ -509,7 +510,13 @@ export const ProjectMediaSection: React.FC<ProjectMediaSectionProps> = ({
                     return (
                       <video
                         key={video.id}
-                        ref={(el) => { videoRefs.current[idx] = el; }}
+                        ref={(el) => {
+                          videoRefs.current[idx] = el;
+                          if (el) {
+                            el.muted = isMuted;
+                            el.defaultMuted = isMuted;
+                          }
+                        }}
                         src={src}
                         preload="auto"
                         autoPlay={isCurrent}
@@ -530,7 +537,10 @@ export const ProjectMediaSection: React.FC<ProjectMediaSectionProps> = ({
                         className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
                           isCurrent ? 'opacity-100 z-0 block' : 'opacity-0 pointer-events-none -z-10'
                         }`}
-                      />
+                      >
+                        <source src={src} type="video/mp4" />
+                        <source src={video.videoSrc} type="video/mp4" />
+                      </video>
                     );
                   });
                 })()}

@@ -29,6 +29,7 @@ import {
   getAllExternalVideoUrls, 
   parseVideoMediaSource 
 } from '../utils/videoStorage';
+import { VIDEO_ASSETS } from '../utils/videoAssets';
 
 interface PropertiesSectionProps {
   onSelectProperty: (property: Property) => void;
@@ -61,7 +62,7 @@ export const PropertiesSection: React.FC<PropertiesSectionProps> = ({
     if (storedVideos['drone-aerial']?.url) return storedVideos['drone-aerial'].url;
     if (externalUrls['monsoon-drone']) return externalUrls['monsoon-drone'];
     if (externalUrls['drone-aerial']) return externalUrls['drone-aerial'];
-    return '/videos/video-drone.mp4';
+    return VIDEO_ASSETS['drone-aerial'] || '/videos/video-drone.mp4';
   };
 
   // Resolve link destination to open full property details in a new browser tab/window
@@ -355,7 +356,13 @@ export const PropertiesSection: React.FC<PropertiesSectionProps> = ({
 
                         return (
                           <video
-                            ref={bannerVideoRef}
+                            ref={(el) => {
+                              bannerVideoRef.current = el;
+                              if (el) {
+                                el.muted = isBannerMuted;
+                                el.defaultMuted = isBannerMuted;
+                              }
+                            }}
                             src={bannerSrc}
                             autoPlay
                             loop
@@ -363,7 +370,10 @@ export const PropertiesSection: React.FC<PropertiesSectionProps> = ({
                             playsInline
                             preload="auto"
                             className="absolute inset-0 w-full h-full object-cover z-0 filter brightness-[0.85] contrast-[1.1] pointer-events-none"
-                          />
+                          >
+                            <source src={bannerSrc} type="video/mp4" />
+                            <source src="/videos/video-drone.mp4" type="video/mp4" />
+                          </video>
                         );
                       })()}
 
