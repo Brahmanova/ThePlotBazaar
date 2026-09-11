@@ -158,16 +158,26 @@ export function parseVideoMediaSource(rawUrl: string): ParsedMediaSource {
 
   // Google Drive URLs:
   // e.g. https://drive.google.com/file/d/1aBcDeFgHiJkLmNoP/view?usp=sharing
+  // or https://drive.google.com/file/u/0/d/1aBcDeFgHiJkLmNoP/view
   // or https://drive.google.com/open?id=1aBcDeFgHiJkLmNoP
-  const gDriveMatch = trimmed.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || trimmed.match(/id=([a-zA-Z0-9_-]+)/);
-  if (gDriveMatch && gDriveMatch[1]) {
-    const fileId = gDriveMatch[1];
-    return {
-      type: 'gdrive',
-      fileId,
-      url: `https://drive.google.com/uc?export=download&id=${fileId}`,
-      embedUrl: `https://drive.google.com/file/d/${fileId}/preview`,
-    };
+  // or https://drive.google.com/uc?id=1aBcDeFgHiJkLmNoP
+  // or https://docs.google.com/file/d/1aBcDeFgHiJkLmNoP/edit
+  const isGDrive = trimmed.includes('drive.google.com') || trimmed.includes('docs.google.com');
+  if (isGDrive) {
+    const fileIdMatch = 
+      trimmed.match(/\/d\/([a-zA-Z0-9_-]+)/) ||
+      trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/) ||
+      trimmed.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+
+    if (fileIdMatch && fileIdMatch[1]) {
+      const fileId = fileIdMatch[1];
+      return {
+        type: 'gdrive',
+        fileId,
+        url: `https://drive.google.com/uc?export=download&id=${fileId}`,
+        embedUrl: `https://drive.google.com/file/d/${fileId}/preview`,
+      };
+    }
   }
 
   // YouTube URLs:
