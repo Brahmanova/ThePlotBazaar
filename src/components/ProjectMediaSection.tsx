@@ -30,7 +30,7 @@ import {
   saveVideoBlob,
   parseVideoMediaSource
 } from '../utils/videoStorage';
-import { VIDEO_ASSETS } from '../utils/videoAssets';
+import { VIDEO_ASSETS, resolveVideoSource } from '../utils/videoAssets';
 
 export interface ProjectVideoItem {
   id: string;
@@ -311,7 +311,7 @@ export const ProjectMediaSection: React.FC<ProjectMediaSectionProps> = ({
   const getVideoSource = (video: ProjectVideoItem) => {
     if (storedVideos[video.id]?.url) return storedVideos[video.id].url;
     if (externalUrls[video.id]) return externalUrls[video.id];
-    return VIDEO_ASSETS[video.id] || video.videoSrc;
+    return resolveVideoSource(video.id, video.videoSrc);
   };
 
   // Active landmark within active video

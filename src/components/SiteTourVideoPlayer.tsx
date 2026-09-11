@@ -22,7 +22,7 @@ import {
   getAllExternalVideoUrls, 
   parseVideoMediaSource 
 } from '../utils/videoStorage';
-import { VIDEO_ASSETS } from '../utils/videoAssets';
+import { VIDEO_ASSETS, resolveVideoSource } from '../utils/videoAssets';
 import { VideoManagerModal } from './VideoManagerModal';
 
 export interface VideoTrack {
@@ -288,7 +288,7 @@ export const SiteTourVideoPlayer: React.FC<SiteTourVideoPlayerProps> = ({
   const getTrackSource = (track: VideoTrack) => {
     if (storedVideos[track.id]?.url) return storedVideos[track.id].url;
     if (externalUrls[track.id]) return externalUrls[track.id];
-    return VIDEO_ASSETS[track.id] || track.videoSrc;
+    return resolveVideoSource(track.id, track.videoSrc);
   };
 
   // Active landmark within current track based on currentTime

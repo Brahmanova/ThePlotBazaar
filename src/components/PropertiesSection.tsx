@@ -29,7 +29,7 @@ import {
   getAllExternalVideoUrls, 
   parseVideoMediaSource 
 } from '../utils/videoStorage';
-import { VIDEO_ASSETS } from '../utils/videoAssets';
+import { VIDEO_ASSETS, resolveVideoSource } from '../utils/videoAssets';
 
 interface PropertiesSectionProps {
   onSelectProperty: (property: Property) => void;
@@ -62,7 +62,7 @@ export const PropertiesSection: React.FC<PropertiesSectionProps> = ({
     if (storedVideos['drone-aerial']?.url) return storedVideos['drone-aerial'].url;
     if (externalUrls['monsoon-drone']) return externalUrls['monsoon-drone'];
     if (externalUrls['drone-aerial']) return externalUrls['drone-aerial'];
-    return VIDEO_ASSETS['drone-aerial'] || '/videos/video-drone.mp4';
+    return resolveVideoSource('drone-aerial', '/videos/video-drone.mp4');
   };
 
   // Resolve link destination to open full property details in a new browser tab/window
